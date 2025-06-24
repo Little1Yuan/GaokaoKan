@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>砍高校录取分数线，你也来砍一刀吧！</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ff9999, #ff6666);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="10" y="50" font-size="12" fill="rgba(255,255,255,0.1)">砍一刀</text></svg>');
+            opacity: 0.3;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            border: 5px solid #ffcc00;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #ff0000, #ff6600);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0,0 Q50,15 100,0 L100,10 L0,10 Z" fill="white"/></svg>');
+            background-size: 100% 100%;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin: 10px 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header p {
+            font-size: 16px;
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+        
+        .score-section {
+            padding: 20px;
+            text-align: center;
+            background: #fff8e1;
+            position: relative;
+        }
+        
+        .current-score {
+            font-size: 80px;
+            font-weight: bold;
+            color: #ff0000;
+            margin: 10px 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .current-score::after {
+            content: "分";
+            font-size: 30px;
+            position: absolute;
+            right: -40px;
+            bottom: 15px;
+            color: #666;
+        }
+        
+        .progress-container {
+            margin: 20px auto;
+            background: #e0e0e0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            max-width: 90%;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ffcc00, #ff6600);
+            width: 0%;
+            transition: width 1s ease-in-out;
+            border-radius: 15px;
+            position: relative;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .lottery-section {
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .grid-item {
+            aspect-ratio: 1;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            text-align: center;
+            padding: 10px;
+            border: 2px solid #ffcc00;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            font-weight: bold;
+            color: #d84315;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .grid-item.active {
+            background: #fff176;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #ffcc00;
+            z-index: 10;
+            border-color: #ff9800;
+        }
+        
+        .grid-item::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.3) 50%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .grid-item.active::before {
+            opacity: 1;
+            animation: shine 1.5s infinite;
+        }
+        
+        .chance-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            gap: 10px;
+        }
+        
+        .chance-box {
+            background: #ffcc00;
+            color: #b71c1c;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        
+        .btn {
+            background: linear-gradient(90deg, #ff5722, #ff9800);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 87, 34, 0.4);
+            transition: all 0.3s;
+            font-weight: bold;
+            display: block;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 87, 34, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 10px rgba(255, 87, 34, 0.4);
+        }
+        
+        .btn::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 20px;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(25deg);
+            transition: all 0.6s;
+        }
+        
+        .btn:hover::after {
+            left: 120%;
+        }
+        
+        .btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .share-btn {
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            width: 80%;
+            margin-top: 10px;
+        }
+        
+        .result-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .result-popup.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .popup-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.3s;
+        }
+        
+        .result-popup.show .popup-content {
+            transform: scale(1);
+        }
+        
+        .popup-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #ff5722;
+        }
+        
+        .popup-text {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #e91e63;
+            min-height: 60px;
+        }
+        
+        .popup-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: #f5f5f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .blessing {
+            font-size: 14px;
+            color: #666;
+            margin-top: 20px;
+            padding: 10px;
+            border-top: 1px dashed #e0e0e0;
+            font-style: italic;
+        }
+        
+        .firework {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            color: #666;
+            background: #f5f5f5;
+            border-top: 1px dashed #e0e0e0;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        @keyframes reduceAnimation {
+            0% { transform: scale(1.5); opacity: 0; }
+            50% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        
+        .reduce-animation {
+            position: absolute;
+            color: #ff0000;
+            font-weight: bold;
+            font-size: 24px;
+            animation: reduceAnimation 1s ease-out;
+            z-index: 50;
+        }
+        
+        .knife-icon {
+            position: absolute;
+            font-size: 30px;
+            color: #ff0000;
+            animation: swing 0.5s ease-in-out infinite alternate;
+            transform-origin: top center;
+            display: none;
+        }
+        
+        @keyframes swing {
+            0% { transform: rotate(-20deg); }
+            100% { transform: rotate(20deg); }
+        }
+        
+        .ad-section {
+            background: #f9f9f9;
+            padding: 15px;
+            margin: 10px 20px;
+            border-radius: 10px;
+            border: 1px dashed #ffcc00;
+            text-align: center;
+            font-size: 14px;
+            color: #e91e63;
+        }
+        
+        /* 分享弹窗样式 */
+        .share-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .share-popup.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .share-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.3s;
+        }
+        
+        .share-popup.show .share-content {
+            transform: scale(1);
+        }
+        
+        .share-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #4caf50;
+        }
+        
+        .share-text {
+            font-size: 18px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            border: 1px dashed #4caf50;
+            text-align: left;
+            line-height: 1.6;
+        }
+        
+        .share-link {
+            color: #2196f3;
+            word-break: break-all;
+            margin-top: 10px;
+            display: block;
+        }
+        
+        .copy-btn {
+            background: linear-gradient(90deg, #2196f3, #21cbf3);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+            transition: all 0.3s;
+            font-weight: bold;
+            display: block;
+            margin: 20px auto 10px;
+            width: 80%;
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(33, 150, 243, 0.6);
+        }
+        
+        .copy-btn.copied {
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+        }
+        
+        .share-note {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .close-share {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: #f5f5f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .qrcode {
+            margin: 20px auto;
+            width: 150px;
+            height: 150px;
+            background: #f5f5f5;
+            border: 1px dashed #4caf50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        
+        .social-icon.wechat {
+            background: linear-gradient(135deg, #09b83e, #0dcb50);
+        }
+        
+        .social-icon.qq {
+            background: linear-gradient(135deg, #12b7f5, #4acbff);
+        }
+        
+        .social-icon.weibo {
+            background: linear-gradient(135deg, #ff763b, #ff9933);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-university"></i> 砍分免费拿</h1>
+            <p>2025年全国高校录取分数线，你也来砍一刀吧！</p>
+        </div>
+        
+        <div class="score-section">
+            <p>当前分数线</p>
+            <div class="current-score" id="score">600</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-text" id="progressText">已砍掉0分</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="ad-section">
+            <i class="fas fa-bullhorn"></i> 你离理想大学的目标已经不远了！邀请好友加速砍分！
+        </div>
+        
+        <div class="lottery-section">
+            <div class="grid-container" id="gridContainer">
+                <!-- 九宫格js gen -->
+            </div>
+            
+            <div class="chance-section">
+                <span>剩余抽奖机会：</span>
+                <div class="chance-box" id="chanceCount">3</div>
+            </div>
+            
+            <button class="btn" id="drawBtn">
+                <i class="fas fa-gift"></i> 立即抽奖
+            </button>
+            
+            <button class="btn share-btn" id="shareBtn">
+                <i class="fas fa-share-alt"></i> 分享好友助力
+            </button>
+        </div>
+        
+        <div class="footer">
+            <p>温馨提示：本游戏纯属娱乐，实际分数线请以教育部门公布为准</p>
+            <p>祝所有考生金榜题名，考上理想大学！</p>
+            <p> </p>
+            <p>© 2025 小小小一耶</p>
+        </div>
+    </div>
+    <div class="result-popup" id="resultPopup">
+        <div class="popup-content">
+            <div class="popup-close" id="closePopup"><i class="fas fa-times"></i></div>
+            <div class="popup-title">恭喜你获得</div>
+            <div class="popup-text" id="rewardText">分数线降低10分</div>
+            <div class="blessing" id="blessingText">距离理想大学又近了一步！</div>
+            <button class="btn" id="confirmBtn">确定</button>
+        </div>
+    </div>
+    <div class="share-popup" id="sharePopup">
+        <div class="share-content">
+            <div class="close-share" id="closeShare"><i class="fas fa-times"></i></div>
+            <div class="share-title"><i class="fas fa-share-alt"></i> 分享给好友</div>
+            <div class="share-text">
+                <p>我正在降低2025年全国高校录取分数线，是朋友就来帮我砍一刀！</p>
+                <div class="share-link" id="shareLink">三连后立刻到账！</div>
+            </div>
+            
+            <div class="qrcode">
+                <i class="fas fa-qrcode" style="font-size: 50px; color: #ccc;"></i>
+            </div>
+            
+            <button class="copy-btn" id="copyBtn">
+                <i class="fas fa-copy"></i> 复制链接
+            </button>
+            
+            <div class="share-note">复制链接发送给好友，获得更多抽奖机会</div>
+            
+            <div class="social-icons">
+                <div class="social-icon wechat">
+                    <i class="fab fa-weixin"></i>
+                </div>
+                <div class="social-icon qq">
+                    <i class="fab fa-qq"></i>
+                </div>
+                <div class="social-icon weibo">
+                    <i class="fab fa-weibo"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const gameData = {
+            score: 650,
+            chance: 3,
+            progress: 0,
+            reduceAmount: 10,
+            blessings: [
+                "金榜题名，前程似锦！",
+                "一举高中，鱼跃龙门！",
+                "旗开得胜，梦想成真！",
+                "十年寒窗，一朝成名！",
+                "考的全会，蒙的全对！",
+                "超常发挥，考上理想大学！",
+                "春风得意马蹄疾，一日看尽长安花！"
+            ],
+            rewards: [
+                { type: 'reduce', text: '分数线降低{{amount}}分', prob: 0.5 },
+                { type: 'again', text: '再来一次', prob: 0.05 },
+                { type: 'chance', text: '{{count}}次抽奖机会', prob: 0.1 },
+                { type: 'nothing', text: '谢谢惠顾', prob: 0.1 },
+                { type: 'bless', text: '高考祝福', prob: 0.25 }
+            ]
+        };
+        const elements = {
+            score: document.getElementById('score'),
+            chanceCount: document.getElementById('chanceCount'),
+            drawBtn: document.getElementById('drawBtn'),
+            shareBtn: document.getElementById('shareBtn'),
+            gridContainer: document.getElementById('gridContainer'),
+            progressBar: document.getElementById('progressBar'),
+            progressText: document.getElementById('progressText'),
+            resultPopup: document.getElementById('resultPopup'),
+            rewardText: document.getElementById('rewardText'),
+            blessingText: document.getElementById('blessingText'),
+            closePopup: document.getElementById('closePopup'),
+            confirmBtn: document.getElementById('confirmBtn'),
+            sharePopup: document.getElementById('sharePopup'),
+            closeShare: document.getElementById('closeShare'),
+            copyBtn: document.getElementById('copyBtn'),
+            shareLink: document.getElementById('shareLink')
+        };
+        
+        function initGame() {
+            updateUI();
+            createGrid();
+            elements.drawBtn.addEventListener('click', startDraw);
+            elements.shareBtn.addEventListener('click', showSharePopup);
+            elements.closePopup.addEventListener('click', closePopup);
+            elements.confirmBtn.addEventListener('click', closePopup);
+            elements.closeShare.addEventListener('click', closeSharePopup);
+            elements.copyBtn.addEventListener('click', copyShareLink);
+        }
+        function createGrid() {
+            elements.gridContainer.innerHTML = '';
+            for (let i = 0; i < 9; i++) {
+                const gridItem = document.createElement('div');
+                gridItem.className = 'grid-item';
+                gridItem.dataset.index = i;
+                gridItem.textContent = getRandomRewardText();
+                elements.gridContainer.appendChild(gridItem);
+            }
+        }
+        function getRandomRewardText() {
+            const rand = Math.random();
+            let cumulativeProb = 0;
+            for (const reward of gameData.rewards) {
+                cumulativeProb += reward.prob;
+                if (rand <= cumulativeProb) {
+                    switch (reward.type) {
+                        case 'reduce':
+                            return reward.text.replace('{{amount}}', gameData.reduceAmount.toFixed(2));
+                        case 'chance':
+                            return reward.text.replace('{{count}}', Math.floor(Math.random() * 2) + 1);
+                        case 'bless':
+                            return gameData.blessings[Math.floor(Math.random() * gameData.blessings.length)];
+                        default:
+                            return reward.text;
+                    }
+                }
+            }
+            return '谢谢惠顾';
+        }
+        function startDraw() {
+            if (gameData.chance <= 0) {
+                alert('没有抽奖机会了，请分享获取更多机会！');
+                return;
+            }
+            gameData.chance--;
+            updateUI();
+            elements.drawBtn.disabled = true;
+            const winIndex = Math.floor(Math.random() * 9);
+            let currentIndex = 0;
+            let speed = 100;
+            let rounds = 0;
+            const highlightItem = () => {
+                document.querySelectorAll('.grid-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                const items = document.querySelectorAll('.grid-item');
+                items[currentIndex].classList.add('active');
+                currentIndex = (currentIndex + 1) % 9;
+                if (rounds < 10) {
+                    speed = 100 - rounds * 8;
+                } else if (rounds < 20) {
+                    speed = 100 - 80 + (rounds - 10) * 20;
+                } else {
+                    speed = 200 + (rounds - 20) * 50;
+                }
+                if (rounds > 25 && currentIndex === ((winIndex+1)%9)) {
+                    setTimeout(() => {
+                        items[winIndex].classList.add('active');
+                        processReward(winIndex);
+                    }, speed);
+                    return;
+                }
+                
+                rounds++;
+                setTimeout(highlightItem, speed);
+            };
+            
+            highlightItem();
+        }
+        function processReward(index) {
+            const items = document.querySelectorAll('.grid-item');
+            const rewardText = items[index].textContent;
+            let rewardType = 'nothing';
+            let amount = 0;
+            let chanceAdded = 0;
+            if (rewardText.includes('分数线降低')) {
+                rewardType = 'reduce';
+                amount = parseFloat(rewardText.match(/(\d+\.?\d*)/)[0]);
+            } else if (rewardText.includes('抽奖机会')) {
+                rewardType = 'chance';
+                chanceAdded = parseInt(rewardText.match(/\d+/)[0]);
+            } else if (rewardText === '再来一次') {
+                rewardType = 'again';
+                chanceAdded = 1;
+            }
+            switch (rewardType) {
+                case 'reduce':
+                    gameData.score -= amount;
+                    gameData.progress += amount;
+                    showReduceAnimation(amount);
+                    gameData.reduceAmount *= 0.8;
+                    if (gameData.reduceAmount < 0.01) {
+                        gameData.reduceAmount = 0.01;
+                    }
+                    break;
+                    
+                case 'chance':
+                case 'again':
+                    gameData.chance += chanceAdded;
+                    break;
+            }
+            
+            updateUI();
+            items[index].textContent = getRandomRewardText();
+            showResultPopup(rewardText);
+            elements.drawBtn.disabled = false;
+        }
+        
+        function showReduceAnimation(amount) {
+            const animation = document.createElement('div');
+            animation.className = 'reduce-animation';
+            animation.textContent = `-${amount.toFixed(2)}分`;
+            animation.style.left = `${Math.random() * 80 + 10}%`;
+            animation.style.top = `${Math.random() * 30 + 35}%`;
+            
+            document.body.appendChild(animation);
+            createFireworks(5);
+            
+            setTimeout(() => {
+                animation.remove();
+            }, 1000);
+        }
+        function createFireworks(count) {
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.left = `${Math.random() * 100}%`;
+                    firework.style.top = `${Math.random() * 100}%`;
+                    firework.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    firework.style.width = `${Math.random() * 10 + 5}px`;
+                    firework.style.height = firework.style.width;
+                    
+                    document.body.appendChild(firework);
+                    setTimeout(() => {
+                        firework.style.transform = `scale(${Math.random() * 5 + 2})`;
+                        firework.style.opacity = '0';
+                    }, 10);
+                    setTimeout(() => {
+                        firework.remove();
+                    }, 1000);
+                }, i * 200);
+            }
+        }
+        
+        function showResultPopup(text) {
+            elements.rewardText.textContent = text;
+            elements.blessingText.textContent = 
+                gameData.blessings[Math.floor(Math.random() * gameData.blessings.length)];
+            
+            elements.resultPopup.classList.add('show');
+        }
+        function closePopup() {
+            elements.resultPopup.classList.remove('show');
+        }
+        function showSharePopup() {
+            elements.sharePopup.classList.add('show');
+        }
+        function closeSharePopup() {
+            elements.sharePopup.classList.remove('show');
+        }
+        
+        function copyShareLink() {
+            const textArea = document.createElement('textarea');
+            textArea.value = elements.shareLink.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    elements.copyBtn.innerHTML = '<i class="fas fa-check"></i> 复制成功';
+                    elements.copyBtn.classList.add('copied');
+                    const addedChance = Math.floor(Math.random() * 3) + 1;
+                    gameData.chance += addedChance;
+                    if (gameData.chance > 3) {
+                        gameData.chance = 3
+                    }
+                    updateUI();
+                    const shareMsg = document.createElement('div');
+                    shareMsg.className = 'reduce-animation';
+                    shareMsg.textContent = `+${addedChance}次机会`;
+                    shareMsg.style.color = '#4caf50';
+                    shareMsg.style.left = '50%';
+                    shareMsg.style.top = '50%';
+                    shareMsg.style.transform = 'translate(-50%, -50%)';
+                    document.body.appendChild(shareMsg);
+                    setTimeout(() => {
+                        shareMsg.remove();
+                    }, 1500);
+                    setTimeout(() => {
+                        elements.copyBtn.innerHTML = '<i class="fas fa-copy"></i> 复制链接';
+                        elements.copyBtn.classList.remove('copied');
+                    }, 3000);
+                }
+            } catch (err) {
+                console.error('复制失败:', err);
+            }
+            document.body.removeChild(textArea);
+        }
+        function updateUI() {
+            elements.score.textContent = gameData.score.toFixed(2);
+            elements.chanceCount.textContent = gameData.chance;
+            const progressPercent = Math.min(gameData.progress / 200 * 100, 100);
+            elements.progressBar.style.width = `${progressPercent}%`;
+            elements.progressText.textContent = `${gameData.progress.toFixed(2)}`;
+            elements.drawBtn.disabled = gameData.chance <= 0;
+        }
+        window.onload = initGame;
+    </script>
+</body>
+</html>
